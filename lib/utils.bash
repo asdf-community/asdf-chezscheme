@@ -4,6 +4,8 @@ set -eo pipefail
 
 GH_REPO="https://github.com/cisco/chezscheme"
 
+ASDF_CHEZ_DEFAULT_OPTS=("--threads")
+
 fail() {
   echo -e "\e[31mFail:\e[m $*"
   exit 1
@@ -57,7 +59,7 @@ install_version() {
 
     (
       cd "$install_path/build"
-      ./configure --installprefix="$install_path" "${ASDF_CHEZ_CONFIGURE_OPTS[@]}"
+      ./configure --installprefix="$install_path" "${ASDF_CHEZ_CONFIGURE_OPTS[@]:-${ASDF_CHEZ_DEFAULT_OPTS[@]}}"
       make install
     )
 
