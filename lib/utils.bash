@@ -9,11 +9,10 @@ fail() {
   exit 1
 }
 
-curl_opt="-L"
+curl_opt=("-L")
 
-# NOTE: You might want to remove this if chezscheme is not hosted on GitHub releases.
 if test -n "$GITHUB_API_TOKEN"; then
-  curl_opt="$curl_opt -H 'Authorization: token $GITHUB_API_TOKEN'"
+  curl_opt+=("-H" "'Authorization: token $GITHUB_API_TOKEN'")
 fi
 
 sort_versions() {
@@ -23,7 +22,7 @@ sort_versions() {
 
 list_github_tags() {
   git ls-remote --tags --refs "$GH_REPO" | grep -o 'refs/tags/.*' | cut -d/ -f3- |
-    sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+    sed 's/^v//'
 }
 
 list_all_versions() {
@@ -38,7 +37,7 @@ download_release() {
   url="$GH_REPO/releases/download/v${version}/csv${version}.tar.gz"
 
   echo "* Downloading chezscheme release $version..."
-  curl "$curl_opt" --output "$filename" -C - "$url" || fail "Could not download $url"
+  curl "${curl_opt[@]}" --output "$filename" -C - "$url" || fail "Could not download $url"
 }
 
 install_version() {
