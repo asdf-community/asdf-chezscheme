@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for chezscheme.
 GH_REPO="https://github.com/cisco/chezscheme"
 
 fail() {
@@ -10,10 +9,10 @@ fail() {
   exit 1
 }
 
-curl_opt="--silent --location"
+curl_opt="-L"
 
 # NOTE: You might want to remove this if chezscheme is not hosted on GitHub releases.
-if [ "x$GITHUB_API_TOKEN" != "x" ]; then
+if test -n "$GITHUB_API_TOKEN"; then
   curl_opt="$curl_opt --header 'Authorization: token $GITHUB_API_TOKEN'"
 fi
 
@@ -28,8 +27,6 @@ list_github_tags() {
 }
 
 list_all_versions() {
-  # TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-  # Change this function if chezscheme has other means of determining installable versions.
   list_github_tags
 }
 
@@ -38,8 +35,7 @@ download_release() {
   version="$1"
   filename="$2"
 
-  # TODO: Adapt the release URL convention for chezscheme
-  url="$GH_REPO/archive/v${version}.tar.gz"
+  url="$GH_REPO/releases/download/v${version}/csv${version}.tar.gz"
 
   echo "* Downloading chezscheme release $version..."
   curl "$curl_opt" --output "$filename" -C - "$url" || fail "Could not download $url"
@@ -54,18 +50,21 @@ install_version() {
     fail "asdf-chezscheme supports release installs only"
   fi
 
-  # TODO: Adapt this to proper extension and adapt extracting strategy.
   local release_file="$install_path/chezscheme-$version.tar.gz"
   (
-    mkdir -p "$install_path"
+    mkdir -p "$install_path/build"
     download_release "$version" "$release_file"
-    tar -xzf "$release_file" -C "$install_path" --strip-components=1 || fail "Could not extract $release_file"
-    rm "$release_file"
+    tar -xzf "$release_file" -C "$install_path/build" --strip-components=1 || fail "Could not extract $release_file"
 
-    # TODO: Asert chezscheme executable exists.
-    local tool_cmd
-    tool_cmd="$(echo "chezscheme --help" | cut -d' ' -f2-)"
-    test -x "$install_path/bin/$tool_cmd" || fail "Expected $install_path/bin/$tool_cmd to be executable."
+    (
+      cd "$install_path/build"
+      ./configure --installprefix="$install_path" "${ASDF_CHEZ_CONFIGURE_OPTS[@]}"
+      make install
+    )
+
+    rm -rf "$install_path/build" "$release_file"
+
+    test -x "$install_path/bin/scheme" || fail "Expected $install_path/bin/$tool_cmd to be executable."
 
     echo "chezscheme $version installation was successful!"
   ) || (
