@@ -17,6 +17,18 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install dependencies on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install ossp-uuid # uuid headers
+
+      - name: Install dependencies on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y uuid-dev libncurses-dev
+
+
       - name: asdf_plugin_test
         uses: asdf-vm/actions/plugin-test@v1.0.0
         with:

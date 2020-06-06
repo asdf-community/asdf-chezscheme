@@ -2,7 +2,7 @@
 
 # asdf-chezscheme ![Build](https://github.com/asdf-community/asdf-chezscheme/workflows/Build/badge.svg) ![Lint](https://github.com/asdf-community/asdf-chezscheme/workflows/Lint/badge.svg)
 
-[chezscheme](https://github.com/asdf-community/chezscheme) plugin for the [asdf version manager](https://asdf-vm.com).
+[chezscheme](https://github.com/cisco/ChezScheme) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
 
@@ -16,7 +16,8 @@
 
 # Dependencies
 
-- `bash`, `curl`, `tar`, `make`: generic POSIX build utilities.
+- `bash`, `curl`, `tar`, GNU Make, gcc: generic POSIX build utilities.
+- headers for uuid, see [BUILDING](https://github.com/cisco/ChezScheme/blob/master/BUILDING#L39)
 - Set env `ASDF_CHEZ_CONFIGURE_OPTS` if you need custom options for `./configure`
 
 # Install
