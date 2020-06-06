@@ -13,7 +13,7 @@ curl_opt="-L"
 
 # NOTE: You might want to remove this if chezscheme is not hosted on GitHub releases.
 if test -n "$GITHUB_API_TOKEN"; then
-  curl_opt="$curl_opt --header 'Authorization: token $GITHUB_API_TOKEN'"
+  curl_opt="$curl_opt -H 'Authorization: token $GITHUB_API_TOKEN'"
 fi
 
 sort_versions() {
