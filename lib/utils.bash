@@ -60,6 +60,7 @@ install_version() {
     (
       cd "$install_path/build"
       ./configure --installprefix="$install_path" "${ASDF_CHEZ_CONFIGURE_OPTS[@]:-${ASDF_CHEZ_DEFAULT_OPTS[@]}}"
+      make
       make install
     )
 
